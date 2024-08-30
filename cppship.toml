@@ -1,0 +1,9 @@
+[package]
+name = "bTodo_app"
+version = "0.1.0"
+std = 17
+
+[dependencies]
+ftxui = "5.0.0"
+sqlitecpp = "3.3.2"
+bcore_lib = { git = "https://github.com/Bjathneas/bCore_lib.git", commit = "3acad15" }
