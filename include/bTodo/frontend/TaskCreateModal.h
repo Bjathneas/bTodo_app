@@ -3,12 +3,14 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 
+#include "bTodo/backend/DataBaseController.h"
+
 namespace bTodo::frontend {
 class TaskCreateModal {
  public:
   TaskCreateModal() = default;
 
-  ftxui::Component createModal();
+  ftxui::Component createModal(bTodo::backend::DataBaseController &dbc);
 
   ftxui::Component getModal();
 
@@ -19,6 +21,7 @@ class TaskCreateModal {
   void Submit();
 
  private:
+  bTodo::backend::DataBaseController *dbc;
   bool is_active{false};
   ftxui::Component modal;
 

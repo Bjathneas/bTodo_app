@@ -1,3 +1,7 @@
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cstdlib>
 #include <ftxui/component/captured_mouse.hpp>
 #include <ftxui/component/component.hpp>
@@ -10,6 +14,8 @@
 #include "bTodo/frontend/TaskCreateModal.h"
 #include "bTodo/frontend/TodoMenu.h"
 
+// #define TEST_TASKS 64
+
 using namespace ftxui;
 
 const std::shared_ptr<bTodo::frontend::TodoMenu> todo_menu{std::make_shared<bTodo::frontend::TodoMenu>()};
@@ -19,11 +25,19 @@ const std::shared_ptr<bTodo::frontend::TaskCreateModal> task_create_modal{
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
-  // todo_menu = std::make_shared<bTodo::frontend::TodoMenu>();
-  std::string test_task = std::string("Test Task");
-  for (int i = 0; i < 25; i++) {
-    todo_menu->addTask(i, test_task);
+  std::string homedir;
+
+  if ((homedir = getenv("HOME")) == "") {
+    homedir = getpwuid(getuid())->pw_dir;
   }
+
+  auto default_folder = std::filesystem::path(homedir + "/.bTodo");
+
+  bTodo::backend::DataBaseController dbc(default_folder);
+
+  auto db_tasks = dbc.getTaskNames();
+
+  todo_menu->setTasks(db_tasks);
 
   auto search_menu = Container::Vertical({
       bTodo::frontend::components::PhantomComponent(text("Page Has Not Been Constructed") | bgcolor(Color::Red)),
@@ -65,15 +79,32 @@ int main() {
 
   int active_layer{0};
 
-  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal()}, &active_layer);
+  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal(dbc)}, &active_layer);
 
   auto renderer = Renderer(application_container, [&] {
     // TODO Put this into a thread for performance with the db
-    if (todo_menu->hasTaskSelectedChanged()) {
-      std::string task_info{"Task Number Selected: " + std::to_string(todo_menu->getSelectedTask())};
-      std::string date{"11/15/2004"};
+    if (dbc.wasUpdated()) {
+      auto db_tasks = dbc.getTaskNames();
+      todo_menu->setTasks(db_tasks);
+    }
+
+    if (todo_menu->hasTaskSelectedChanged() || dbc.wasUpdated()) {
+      std::string task_info;
+      std::string date;
+
+      if (todo_menu->getSelectedTask() == -1) {
+        task_info = "Press \'c\' to create a new task";
+        date = "yyyy-mm-dd";
+      } else {
+        // get the description and due date
+        auto dbc_info = dbc.getTaskInfo(todo_menu->getSelectedTask());
+        task_info = dbc_info.first;
+        date = dbc_info.second;
+      }
       todo_menu->setDisplayedTaskInfo(task_info, date);
     }
+
+    dbc.resetUpdated();
     auto document = menu_renderer->Render();
 
     if (task_create_modal->isActive()) {

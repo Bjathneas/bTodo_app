@@ -5,7 +5,8 @@
 #include "bTodo/frontend/Components.h"
 
 namespace bTodo::frontend {
-ftxui::Component TaskCreateModal::createModal() {
+ftxui::Component TaskCreateModal::createModal(bTodo::backend::DataBaseController &dbc) {
+  this->dbc = &dbc;
   for (int i = 1; i < 32; i++) {
     if (i <= 12) this->months.push_back(std::to_string(i));
     if (i >= 24) this->years.push_back("20" + std::to_string(i));
@@ -52,6 +53,10 @@ void TaskCreateModal::Close() {
   this->is_active = false;
 }
 // TODO BACKEND: Implement Creation of Tasks
-void TaskCreateModal::Submit() { this->Close(); };
+void TaskCreateModal::Submit() {
+  std::string due_date = months[month] + "/" + days[day] + "/" + years[year];
+  this->dbc->addTask(task_name, task_description, due_date);
+  this->Close();
+}
 
 }  // namespace bTodo::frontend

@@ -2,4 +2,12 @@ DATA BASE SCHEMEA
 TABLES:
   Tasks - > ID, NAME, DESCRIPTION, DUE_DATE, CREATION_DATE
   Tags  - > ID, TAG_LIST
+SETTINGS MENU
+  Use toml config file ~/.config/bTodo/config.toml
+  Themes, sqlite location, keybindings, sort order, score method
+SEARCH MENU
+  Search bar displays tasks, select a task which will switch back to the todo menu and select it for you in said menu
+CURRENT KEYBINDINGS
+  ESCAPE - > close modal/ exit application
+  C      - > Open Creation menu in modal
 

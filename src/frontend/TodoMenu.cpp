@@ -1,5 +1,7 @@
 #include "bTodo/frontend/TodoMenu.h"
 
+#include <ftxui/dom/elements.hpp>
+
 #include "bTodo/frontend/Components.h"
 #include "bTodo/frontend/scroller.hpp"
 
@@ -22,11 +24,14 @@ ftxui::Component TodoMenu::createMenu() {
          ftxui::flex_grow;
 }
 
+// TODO Change this to just get the data from the db by an id
 void TodoMenu::setDisplayedTaskInfo(std::string &info, std::string &date) {
   this->information_container->DetachAllChildren();
   this->information_container->Add(bTodo::frontend::components::Window(
       "Info", ftxui::Scroller({bTodo::frontend::components::PhantomComponent(ftxui::vbox(
-                  {ftxui::paragraph(info), ftxui::separator(),
+                  {// ftxui::text(name),
+                   // ftxui::separator,
+                   ftxui::paragraph(info), ftxui::separator(),
                    ftxui::text("Date Due: " + date) | ftxui::align_right | ftxui::color(ftxui::Color::Red)}))})));
 }
 
@@ -35,9 +40,19 @@ void TodoMenu::addTask(int &task_id, std::string &task_name) {
   this->task_ids.push_back(task_id);
 }
 
+void TodoMenu::setTasks(std::vector<std::pair<int, std::string>> &tasks) {
+  this->tasks.clear();
+  this->task_ids.clear();
+
+  for (std::pair<int, std::string> &task : tasks) {
+    this->tasks.push_back(task.second);
+    this->task_ids.push_back(task.first);
+  }
+}
+
 void TodoMenu::removeTask(int &task_id) {}
 
-int TodoMenu::getSelectedTask() { return this->task_selected; }
+int TodoMenu::getSelectedTask() { return this->task_ids[this->task_selected]; }
 
 bool TodoMenu::hasTaskSelectedChanged() {
   bool has_changed = this->task_selected != this->task_selected_previously;
