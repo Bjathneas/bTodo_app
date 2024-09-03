@@ -15,6 +15,8 @@ class DataBaseController {
 
   void addTask(std::string &task_name, std::string &task_description, std::string &due_date);
 
+  void removeTask(int task_id);
+
   bool wasUpdated();
   void resetUpdated();
 
@@ -24,3 +26,4 @@ class DataBaseController {
   bool updated{false};
 };
 }  // namespace bTodo::backend
+

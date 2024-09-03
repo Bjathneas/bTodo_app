@@ -52,7 +52,7 @@ void TaskCreateModal::Close() {
   this->task_description = "";
   this->is_active = false;
 }
-// TODO BACKEND: Implement Creation of Tasks
+
 void TaskCreateModal::Submit() {
   std::string due_date = months[month] + "/" + days[day] + "/" + years[year];
   this->dbc->addTask(task_name, task_description, due_date);
@@ -60,3 +60,4 @@ void TaskCreateModal::Submit() {
 }
 
 }  // namespace bTodo::frontend
+

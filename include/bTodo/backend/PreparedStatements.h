@@ -7,7 +7,8 @@
   "TaskDescription varchar(1024) NOT NULL, CreationDate varchar(16) NOT NULL, DueDate varchar(16) NOT NULL)"
 #define bTODO_INSERT_INTO_TASK_TABLE \
   "INSERT INTO Tasks (TaskName, TaskDescription, CreationDate, DueDate ) VALUES ( ?, ?, ?, ? )"
-#define bTODO_GET_ALL_TASK_TABLE "SELECT * FROM Tasks"
+#define bTODO_GET_ALL_TASK_TABLE "SELECT * FROM Tasks ORDER BY DueDate ASC"
+#define bTODO_REMOVE_TASK "DELETE FROM Tasks WHERE ID=?"
 
 namespace bTodo::backend {
 class PreparedStatements {
@@ -17,6 +18,8 @@ class PreparedStatements {
 
   std::shared_ptr<SQLite::Statement> insert_into_task_table;
   std::shared_ptr<SQLite::Statement> get_all_from_task_table;
+  std::shared_ptr<SQLite::Statement> remove_task;
 };
 void registerStatements(SQLite::Database database);
 }  // namespace bTodo::backend
+

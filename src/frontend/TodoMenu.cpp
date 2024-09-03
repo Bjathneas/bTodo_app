@@ -24,7 +24,6 @@ ftxui::Component TodoMenu::createMenu() {
          ftxui::flex_grow;
 }
 
-// TODO Change this to just get the data from the db by an id
 void TodoMenu::setDisplayedTaskInfo(std::string &info, std::string &date) {
   this->information_container->DetachAllChildren();
   this->information_container->Add(bTodo::frontend::components::Window(
@@ -63,3 +62,4 @@ bool TodoMenu::hasTaskSelectedChanged() {
 }
 
 }  // namespace bTodo::frontend
+

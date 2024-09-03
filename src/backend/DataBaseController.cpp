@@ -82,7 +82,18 @@ void DataBaseController::addTask(std::string &task_name, std::string &task_descr
   this->updated = true;
 }
 
+void DataBaseController::removeTask(int task_id) {
+  auto query = this->sql_queries.remove_task;
+
+  query->bind(1, task_id);
+
+  query->exec();
+  query->reset();
+  this->updated = true;
+}
+
 bool DataBaseController::wasUpdated() { return this->updated; }
 
 void DataBaseController::resetUpdated() { this->updated = false; }
 }  // namespace bTodo::backend
+

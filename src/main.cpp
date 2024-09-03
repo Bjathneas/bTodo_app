@@ -1,6 +1,10 @@
+#ifdef __unix__
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
+#else
+#error This OS is not supported yet!
+#endif
 
 #include <cstdlib>
 #include <ftxui/component/captured_mouse.hpp>
@@ -14,6 +18,8 @@
 #include "bTodo/frontend/TaskCreateModal.h"
 #include "bTodo/frontend/TodoMenu.h"
 
+
+
 // #define TEST_TASKS 64
 
 using namespace ftxui;
@@ -25,12 +31,13 @@ const std::shared_ptr<bTodo::frontend::TaskCreateModal> task_create_modal{
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
-  std::string homedir;
+  
+  std::string homedir = getenv("HOME");
 
-  if ((homedir = getenv("HOME")) == "") {
+  if (homedir == "") {
     homedir = getpwuid(getuid())->pw_dir;
   }
-
+  
   auto default_folder = std::filesystem::path(homedir + "/.bTodo");
 
   bTodo::backend::DataBaseController dbc(default_folder);
@@ -82,7 +89,6 @@ int main() {
   auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal(dbc)}, &active_layer);
 
   auto renderer = Renderer(application_container, [&] {
-    // TODO Put this into a thread for performance with the db
     if (dbc.wasUpdated()) {
       auto db_tasks = dbc.getTaskNames();
       todo_menu->setTasks(db_tasks);
@@ -127,6 +133,11 @@ int main() {
       return true;
     }
 
+    if(event == Event::End) {
+      dbc.removeTask(todo_menu->getSelectedTask());
+      return true;
+    }
+
     if (event == Event::Character('c')) {
       task_create_modal->Open();
     }
@@ -138,3 +149,4 @@ int main() {
 
   return EXIT_SUCCESS;
 }
+
