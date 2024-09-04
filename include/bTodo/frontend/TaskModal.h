@@ -3,10 +3,8 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 
-//TODO Change This File into a Basic Modal
-
 namespace bTodo::frontend {
-class TaskCreateModal {
+class TaskModal {
  public:
   struct Task {
    std::string task_name;
@@ -15,9 +13,9 @@ class TaskCreateModal {
   };
 
   
-  TaskCreateModal() = default;
+  TaskModal() = default;
 
-  ftxui::Component createModal();
+  ftxui::Component createModal(std::string name);
 
   ftxui::Component getModal();
 
@@ -30,6 +28,8 @@ class TaskCreateModal {
   bool hasCachedTasks();
   std::vector<Task> &getTaskCache();
   void clearCache();
+
+  void loadTask(Task &task);
 
  private:
   std::vector<Task> task_cache;
@@ -47,3 +47,4 @@ class TaskCreateModal {
   std::vector<std::string> years;
 };
 }  // namespace bTodo::frontend
+

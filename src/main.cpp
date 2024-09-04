@@ -13,9 +13,11 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <string>
+#include <filesystem>
 
 #include "bTodo/frontend/Components.h"
-#include "bTodo/frontend/TaskCreateModal.h"
+#include "bTodo/frontend/TaskModal.h"
+#include "bTodo/backend/DataBaseController.h"
 #include "bTodo/frontend/TodoMenu.h"
 
 
@@ -25,9 +27,9 @@
 using namespace ftxui;
 
 const std::shared_ptr<bTodo::frontend::TodoMenu> todo_menu{std::make_shared<bTodo::frontend::TodoMenu>()};
-const std::shared_ptr<bTodo::frontend::TaskCreateModal> task_create_modal{
-    std::make_shared<bTodo::frontend::TaskCreateModal>()};
-
+const std::shared_ptr<bTodo::frontend::TaskModal> task_create_modal{
+    std::make_shared<bTodo::frontend::TaskModal>()};
+//TODO BREAK THIS SHIT DOWN SO IT CAN BE READABLE
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
@@ -86,10 +88,20 @@ int main() {
 
   int active_layer{0};
 
-  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal()}, &active_layer);
+  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal("Create Task")}, &active_layer);
 
   auto renderer = Renderer(application_container, [&] {
-    //TODO check Modals for changes in their cache and update database accordingly
+
+    if(task_create_modal->hasCachedTasks()) {
+      auto cached_tasks = task_create_modal->getTaskCache();
+
+      for(bTodo::frontend::TaskModal::Task task : cached_tasks) {
+        dbc.addTask(task.task_name, task.task_description, task.due_date);
+      }
+
+      task_create_modal->clearCache();
+    }
+    
     if (dbc.wasUpdated()) {
       auto db_tasks = dbc.getTaskNames();
       todo_menu->setTasks(db_tasks);

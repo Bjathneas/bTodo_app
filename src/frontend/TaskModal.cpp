@@ -1,11 +1,13 @@
-#include "bTodo/frontend/TaskCreateModal.h"
+#include "bTodo/frontend/TaskModal.h"
 
 #include <ftxui/component/component_base.hpp>
+#include <sstream>
+#include <algorithm>
 
 #include "bTodo/frontend/Components.h"
 
 namespace bTodo::frontend {
-ftxui::Component TaskCreateModal::createModal() {
+ftxui::Component TaskModal::createModal(std::string name) {
   for (int i = 1; i < 32; i++) {
     if (i <= 12) this->months.push_back(std::to_string(i));
     if (i >= 24) this->years.push_back("20" + std::to_string(i));
@@ -15,7 +17,7 @@ ftxui::Component TaskCreateModal::createModal() {
   this->modal =
       ftxui::Container::Vertical(
           {ftxui::Container::Horizontal(
-               {bTodo::frontend::components::PhantomComponent(ftxui::text("Create Task")) | ftxui::vcenter,
+               {bTodo::frontend::components::PhantomComponent(ftxui::text(name)) | ftxui::vcenter,
                 bTodo::frontend::components::PhantomComponent(ftxui::filler()),
                 ftxui::Button("X", [&]() { this->Close(); }) | ftxui::align_right}),
            bTodo::frontend::components::PhantomComponent(ftxui::separatorDashed()),
@@ -40,33 +42,52 @@ ftxui::Component TaskCreateModal::createModal() {
   return this->modal;
 }
 
-ftxui::Component TaskCreateModal::getModal() { return this->modal; }
+ftxui::Component TaskModal::getModal() { return this->modal; }
 
-bool TaskCreateModal::isActive() { return this->is_active; }
+bool TaskModal::isActive() { return this->is_active; }
 
-void TaskCreateModal::Open() { this->is_active = true; }
+void TaskModal::Open() { this->is_active = true; }
 
-void TaskCreateModal::Close() {
+void TaskModal::Close() {
   this->task_name = "";
   this->task_description = "";
   this->is_active = false;
 }
 
-void TaskCreateModal::Submit() {
+void TaskModal::Submit() {
   std::string due_date = months[month] + "/" + days[day] + "/" + years[year];
   this->task_cache.push_back(Task{task_name, task_description, due_date});
   this->Close();
 }
 
-bool TaskCreateModal::hasCachedTasks() { return task_cache.size() > 0; }
+bool TaskModal::hasCachedTasks() { return task_cache.size() > 0; }
 
-std::vector<TaskCreateModal::Task> &TaskCreateModal::getTaskCache() {
+std::vector<TaskModal::Task> &TaskModal::getTaskCache() {
     return task_cache;
 }
 
-void TaskCreateModal::clearCache() {
+void TaskModal::clearCache() {
     task_cache.clear();
 }
 
+void TaskModal::loadTask(TaskModal::Task &task) {
+    this->task_name = task.task_name;
+    this->task_description = task.task_description;
+
+    //break down month day year
+    std::vector<std::string> date;
+
+    std::string date_str;
+
+    std::stringstream due_date_ss(task.due_date);
+
+    while(getline(due_date_ss, date_str,'/')) {
+        date.push_back(date_str);
+    }
+
+    this->day =  std::find(this->days.begin(), this->days.end(), date[1]) - this->days.begin(); 
+    this->month = std::find(this->months.begin(), this->months.end(), date[0]) - this->months.begin();
+    this->year = std::find(this->years.begin(), this->years.end(), date[2]) - this->years.begin();
+}
 }  // namespace bTodo::frontend
 
