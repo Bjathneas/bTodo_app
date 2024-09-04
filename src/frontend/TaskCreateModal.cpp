@@ -5,8 +5,7 @@
 #include "bTodo/frontend/Components.h"
 
 namespace bTodo::frontend {
-ftxui::Component TaskCreateModal::createModal(bTodo::backend::DataBaseController &dbc) {
-  this->dbc = &dbc;
+ftxui::Component TaskCreateModal::createModal() {
   for (int i = 1; i < 32; i++) {
     if (i <= 12) this->months.push_back(std::to_string(i));
     if (i >= 24) this->years.push_back("20" + std::to_string(i));
@@ -55,8 +54,18 @@ void TaskCreateModal::Close() {
 
 void TaskCreateModal::Submit() {
   std::string due_date = months[month] + "/" + days[day] + "/" + years[year];
-  this->dbc->addTask(task_name, task_description, due_date);
+  this->task_cache.push_back(Task{task_name, task_description, due_date});
   this->Close();
+}
+
+bool TaskCreateModal::hasCachedTasks() { return task_cache.size() > 0; }
+
+std::vector<TaskCreateModal::Task> &TaskCreateModal::getTaskCache() {
+    return task_cache;
+}
+
+void TaskCreateModal::clearCache() {
+    task_cache.clear();
 }
 
 }  // namespace bTodo::frontend

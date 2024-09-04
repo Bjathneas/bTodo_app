@@ -3,14 +3,21 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 
-#include "bTodo/backend/DataBaseController.h"
+//TODO Change This File into a Basic Modal
 
 namespace bTodo::frontend {
 class TaskCreateModal {
  public:
+  struct Task {
+   std::string task_name;
+   std::string task_description;
+   std::string due_date;
+  };
+
+  
   TaskCreateModal() = default;
 
-  ftxui::Component createModal(bTodo::backend::DataBaseController &dbc);
+  ftxui::Component createModal();
 
   ftxui::Component getModal();
 
@@ -20,8 +27,12 @@ class TaskCreateModal {
   void Close();
   void Submit();
 
+  bool hasCachedTasks();
+  std::vector<Task> &getTaskCache();
+  void clearCache();
+
  private:
-  bTodo::backend::DataBaseController *dbc;
+  std::vector<Task> task_cache;
   bool is_active{false};
   ftxui::Component modal;
 

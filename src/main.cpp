@@ -86,9 +86,10 @@ int main() {
 
   int active_layer{0};
 
-  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal(dbc)}, &active_layer);
+  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal()}, &active_layer);
 
   auto renderer = Renderer(application_container, [&] {
+    //TODO check Modals for changes in their cache and update database accordingly
     if (dbc.wasUpdated()) {
       auto db_tasks = dbc.getTaskNames();
       todo_menu->setTasks(db_tasks);
