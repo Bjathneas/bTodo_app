@@ -7,12 +7,11 @@ namespace bTodo::frontend {
 class TaskModal {
  public:
   struct Task {
-   std::string task_name;
-   std::string task_description;
-   std::string due_date;
+    std::string task_name;
+    std::string task_description;
+    std::string due_date;
   };
 
-  
   TaskModal() = default;
 
   ftxui::Component createModal(std::string name);
@@ -47,4 +46,3 @@ class TaskModal {
   std::vector<std::string> years;
 };
 }  // namespace bTodo::frontend
-

@@ -7,49 +7,45 @@
 #endif
 
 #include <cstdlib>
+#include <filesystem>
 #include <ftxui/component/captured_mouse.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <string>
-#include <filesystem>
 
+#include "bTodo/backend/DataBaseController.h"
 #include "bTodo/frontend/Components.h"
 #include "bTodo/frontend/TaskModal.h"
-#include "bTodo/backend/DataBaseController.h"
 #include "bTodo/frontend/TodoMenu.h"
-
-
 
 // #define TEST_TASKS 64
 
 using namespace ftxui;
 
 const std::shared_ptr<bTodo::frontend::TodoMenu> todo_menu{std::make_shared<bTodo::frontend::TodoMenu>()};
-const std::shared_ptr<bTodo::frontend::TaskModal> task_create_modal{
-    std::make_shared<bTodo::frontend::TaskModal>()};
+const std::shared_ptr<bTodo::frontend::TaskModal> task_create_modal{std::make_shared<bTodo::frontend::TaskModal>()};
 bTodo::backend::DataBaseController dbc;
 
 void setTodoMenuTasks() {
   todo_menu->clearTasks();
   auto tasks = dbc.getAllTasks();
 
-  for(auto task : tasks) {
+  for (auto task : tasks) {
     todo_menu->addTask(task.uid, task.name);
   }
 }
-//TODO BREAK THIS SHIT DOWN SO IT CAN BE READABLE
+// TODO BREAK THIS SHIT DOWN SO IT CAN BE READABLE
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
-  
   std::string homedir = getenv("HOME");
 
   if (homedir == "") {
     homedir = getpwuid(getuid())->pw_dir;
   }
-  
+
   auto default_folder = std::filesystem::path(homedir + "/.bTodo");
 
   dbc = bTodo::backend::DataBaseController(default_folder);
@@ -96,20 +92,20 @@ int main() {
 
   int active_layer{0};
 
-  auto application_container = Container::Tab({menu_renderer, task_create_modal->createModal("Create Task")}, &active_layer);
+  auto application_container =
+      Container::Tab({menu_renderer, task_create_modal->createModal("Create Task")}, &active_layer);
 
   auto renderer = Renderer(application_container, [&] {
-
-    if(task_create_modal->hasCachedTasks()) {
+    if (task_create_modal->hasCachedTasks()) {
       auto cached_tasks = task_create_modal->getTaskCache();
 
-      for(bTodo::frontend::TaskModal::Task task : cached_tasks) {
+      for (bTodo::frontend::TaskModal::Task task : cached_tasks) {
         dbc.addTask(task.task_name, task.task_description, task.due_date);
       }
 
       task_create_modal->clearCache();
     }
-    
+
     if (dbc.wasUpdated()) {
       setTodoMenuTasks();
     }
@@ -142,7 +138,7 @@ int main() {
       return true;
     }
 
-    if(event == Event::End) {
+    if (event == Event::End) {
       dbc.removeTask(todo_menu->getSelectedTask());
       return true;
     }
@@ -158,4 +154,3 @@ int main() {
 
   return EXIT_SUCCESS;
 }
-

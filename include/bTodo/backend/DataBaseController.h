@@ -7,13 +7,13 @@
 namespace bTodo::backend {
 class DataBaseController {
  public:
-   struct Task {
-     int uid;
-     std::string name;
-     std::string description;
-     std::string creation_date;
-     std::string due_date;
-   };
+  struct Task {
+    int uid;
+    std::string name;
+    std::string description;
+    std::string creation_date;
+    std::string due_date;
+  };
   DataBaseController() = default;
   DataBaseController(std::filesystem::path &database_folder);
 
@@ -33,4 +33,3 @@ class DataBaseController {
   bool updated{false};
 };
 }  // namespace bTodo::backend
-

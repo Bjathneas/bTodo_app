@@ -23,7 +23,6 @@ DataBaseController::DataBaseController(std::filesystem::path &database_folder) {
   sql_queries = PreparedStatements(database);
 }
 
-
 std::vector<DataBaseController::Task> DataBaseController::getAllTasks() {
   std::vector<DataBaseController::Task> task_names;
 
@@ -34,7 +33,8 @@ std::vector<DataBaseController::Task> DataBaseController::getAllTasks() {
     std::string task_creation_date = sql_queries.get_all_from_task_table->getColumn(3);
     std::string task_due_date = sql_queries.get_all_from_task_table->getColumn(4);
 
-    task_names.emplace_back(DataBaseController::Task{task_id, task_name, task_description, task_creation_date, task_due_date});
+    task_names.emplace_back(
+        DataBaseController::Task{task_id, task_name, task_description, task_creation_date, task_due_date});
   }
 
   sql_queries.get_all_from_task_table->reset();
@@ -47,7 +47,7 @@ std::vector<DataBaseController::Task> DataBaseController::getAllTasks() {
 }
 
 DataBaseController::Task DataBaseController::getTask(int task_id) {
-  DataBaseController::Task task_info{-1, "FAILED TO FIND TASK INFO", "Something went wrong","","mm/dd/yyyy"};
+  DataBaseController::Task task_info{-1, "FAILED TO FIND TASK INFO", "Something went wrong", "", "mm/dd/yyyy"};
 
   bool found{false};
 
@@ -58,7 +58,7 @@ DataBaseController::Task DataBaseController::getTask(int task_id) {
       std::string task_description = sql_queries.get_all_from_task_table->getColumn(2);
       std::string task_creation_date = sql_queries.get_all_from_task_table->getColumn(3);
       std::string task_due_date = sql_queries.get_all_from_task_table->getColumn(4);
-    
+
       task_info = DataBaseController::Task{task_id, task_name, task_description, task_creation_date, task_due_date};
       found = true;  // because ive seen break fail in this situation
     }
@@ -102,4 +102,3 @@ bool DataBaseController::wasUpdated() { return this->updated; }
 
 void DataBaseController::resetUpdated() { this->updated = false; }
 }  // namespace bTodo::backend
-

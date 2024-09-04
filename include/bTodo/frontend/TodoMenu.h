@@ -28,4 +28,3 @@ class TodoMenu {
   ftxui::Component information_container;
 };
 }  // namespace bTodo::frontend
-

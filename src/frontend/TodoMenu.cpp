@@ -67,4 +67,3 @@ bool TodoMenu::hasTaskSelectedChanged() {
 }
 
 }  // namespace bTodo::frontend
-

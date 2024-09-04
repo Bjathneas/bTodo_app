@@ -22,4 +22,3 @@ class PreparedStatements {
 };
 void registerStatements(SQLite::Database database);
 }  // namespace bTodo::backend
-

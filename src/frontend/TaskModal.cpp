@@ -1,8 +1,8 @@
 #include "bTodo/frontend/TaskModal.h"
 
+#include <algorithm>
 #include <ftxui/component/component_base.hpp>
 #include <sstream>
-#include <algorithm>
 
 #include "bTodo/frontend/Components.h"
 
@@ -62,32 +62,27 @@ void TaskModal::Submit() {
 
 bool TaskModal::hasCachedTasks() { return task_cache.size() > 0; }
 
-std::vector<TaskModal::Task> &TaskModal::getTaskCache() {
-    return task_cache;
-}
+std::vector<TaskModal::Task> &TaskModal::getTaskCache() { return task_cache; }
 
-void TaskModal::clearCache() {
-    task_cache.clear();
-}
+void TaskModal::clearCache() { task_cache.clear(); }
 
 void TaskModal::loadTask(TaskModal::Task &task) {
-    this->task_name = task.task_name;
-    this->task_description = task.task_description;
+  this->task_name = task.task_name;
+  this->task_description = task.task_description;
 
-    //break down month day year
-    std::vector<std::string> date;
+  // break down month day year
+  std::vector<std::string> date;
 
-    std::string date_str;
+  std::string date_str;
 
-    std::stringstream due_date_ss(task.due_date);
+  std::stringstream due_date_ss(task.due_date);
 
-    while(getline(due_date_ss, date_str,'/')) {
-        date.push_back(date_str);
-    }
+  while (getline(due_date_ss, date_str, '/')) {
+    date.push_back(date_str);
+  }
 
-    this->day =  std::find(this->days.begin(), this->days.end(), date[1]) - this->days.begin(); 
-    this->month = std::find(this->months.begin(), this->months.end(), date[0]) - this->months.begin();
-    this->year = std::find(this->years.begin(), this->years.end(), date[2]) - this->years.begin();
+  this->day = std::find(this->days.begin(), this->days.end(), date[1]) - this->days.begin();
+  this->month = std::find(this->months.begin(), this->months.end(), date[0]) - this->months.begin();
+  this->year = std::find(this->years.begin(), this->years.end(), date[2]) - this->years.begin();
 }
 }  // namespace bTodo::frontend
-

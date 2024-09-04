@@ -12,4 +12,3 @@ PreparedStatements::PreparedStatements(std::shared_ptr<SQLite::Database> &databa
   this->remove_task = std::make_shared<SQLite::Statement>(*database.get(), bTODO_REMOVE_TASK);
 }
 }  // namespace bTodo::backend
-
