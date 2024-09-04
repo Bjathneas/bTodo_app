@@ -29,6 +29,16 @@ using namespace ftxui;
 const std::shared_ptr<bTodo::frontend::TodoMenu> todo_menu{std::make_shared<bTodo::frontend::TodoMenu>()};
 const std::shared_ptr<bTodo::frontend::TaskModal> task_create_modal{
     std::make_shared<bTodo::frontend::TaskModal>()};
+bTodo::backend::DataBaseController dbc;
+
+void setTodoMenuTasks() {
+  todo_menu->clearTasks();
+  auto tasks = dbc.getAllTasks();
+
+  for(auto task : tasks) {
+    todo_menu->addTask(task.uid, task.name);
+  }
+}
 //TODO BREAK THIS SHIT DOWN SO IT CAN BE READABLE
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
@@ -42,11 +52,9 @@ int main() {
   
   auto default_folder = std::filesystem::path(homedir + "/.bTodo");
 
-  bTodo::backend::DataBaseController dbc(default_folder);
+  dbc = bTodo::backend::DataBaseController(default_folder);
 
-  auto db_tasks = dbc.getTaskNames();
-
-  todo_menu->setTasks(db_tasks);
+  setTodoMenuTasks();
 
   auto search_menu = Container::Vertical({
       bTodo::frontend::components::PhantomComponent(text("Page Has Not Been Constructed") | bgcolor(Color::Red)),
@@ -103,24 +111,12 @@ int main() {
     }
     
     if (dbc.wasUpdated()) {
-      auto db_tasks = dbc.getTaskNames();
-      todo_menu->setTasks(db_tasks);
+      setTodoMenuTasks();
     }
 
     if (todo_menu->hasTaskSelectedChanged() || dbc.wasUpdated()) {
-      std::string task_info;
-      std::string date;
-
-      if (todo_menu->getSelectedTask() == -1) {
-        task_info = "Press \'c\' to create a new task";
-        date = "yyyy-mm-dd";
-      } else {
-        // get the description and due date
-        auto dbc_info = dbc.getTaskInfo(todo_menu->getSelectedTask());
-        task_info = dbc_info.first;
-        date = dbc_info.second;
-      }
-      todo_menu->setDisplayedTaskInfo(task_info, date);
+      auto selected_task = dbc.getTask(todo_menu->getSelectedTask());
+      todo_menu->setDisplayedTaskInfo(selected_task.description, selected_task.due_date);
     }
 
     dbc.resetUpdated();

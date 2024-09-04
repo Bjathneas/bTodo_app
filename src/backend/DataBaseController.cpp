@@ -23,16 +23,18 @@ DataBaseController::DataBaseController(std::filesystem::path &database_folder) {
   sql_queries = PreparedStatements(database);
 }
 
-std::vector<std::pair<int, std::string>> DataBaseController::getTaskNames() {
-  std::vector<std::pair<int, std::string>> task_names;
+
+std::vector<DataBaseController::Task> DataBaseController::getAllTasks() {
+  std::vector<DataBaseController::Task> task_names;
 
   while (sql_queries.get_all_from_task_table->executeStep()) {
     int task_id = sql_queries.get_all_from_task_table->getColumn(0);
     std::string task_name = sql_queries.get_all_from_task_table->getColumn(1);
+    std::string task_description = sql_queries.get_all_from_task_table->getColumn(2);
+    std::string task_creation_date = sql_queries.get_all_from_task_table->getColumn(3);
+    std::string task_due_date = sql_queries.get_all_from_task_table->getColumn(4);
 
-    std::pair<int, std::string> row(task_id, task_name);
-
-    task_names.emplace_back(row);
+    task_names.emplace_back(DataBaseController::Task{task_id, task_name, task_description, task_creation_date, task_due_date});
   }
 
   sql_queries.get_all_from_task_table->reset();
@@ -41,19 +43,23 @@ std::vector<std::pair<int, std::string>> DataBaseController::getTaskNames() {
     return task_names;
   }
 
-  return {{-1, "NO TASKS"}};
+  return {{-1, "NO TASKS", "Press \'c\' to create a new task", "", ""}};
 }
 
-std::pair<std::string, std::string> DataBaseController::getTaskInfo(int task_id) {
-  std::pair<std::string, std::string> task_info{"FAILED TO FIND TASK INFO", "mm/dd/yyyy"};
+DataBaseController::Task DataBaseController::getTask(int task_id) {
+  DataBaseController::Task task_info{-1, "FAILED TO FIND TASK INFO", "Something went wrong","","mm/dd/yyyy"};
 
   bool found{false};
 
   while (sql_queries.get_all_from_task_table->executeStep() && !found) {
     int task_id_from_query = sql_queries.get_all_from_task_table->getColumn(0);
     if (task_id_from_query == task_id) {
-      task_info = {sql_queries.get_all_from_task_table->getColumn(2),
-                   sql_queries.get_all_from_task_table->getColumn(4)};
+      std::string task_name = sql_queries.get_all_from_task_table->getColumn(1);
+      std::string task_description = sql_queries.get_all_from_task_table->getColumn(2);
+      std::string task_creation_date = sql_queries.get_all_from_task_table->getColumn(3);
+      std::string task_due_date = sql_queries.get_all_from_task_table->getColumn(4);
+    
+      task_info = DataBaseController::Task{task_id, task_name, task_description, task_creation_date, task_due_date};
       found = true;  // because ive seen break fail in this situation
     }
   }

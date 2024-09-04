@@ -51,6 +51,11 @@ void TodoMenu::setTasks(std::vector<std::pair<int, std::string>> &tasks) {
 
 void TodoMenu::removeTask(int &task_id) {}
 
+void TodoMenu::clearTasks() {
+  this->tasks.clear();
+  this->task_ids.clear();
+}
+
 int TodoMenu::getSelectedTask() { return this->task_ids[this->task_selected]; }
 
 bool TodoMenu::hasTaskSelectedChanged() {

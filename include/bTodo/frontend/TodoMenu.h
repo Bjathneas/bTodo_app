@@ -13,6 +13,7 @@ class TodoMenu {
   void addTask(int &task_id, std::string &task_name);
   void setTasks(std::vector<std::pair<int, std::string>> &tasks);
   void removeTask(int &task_id);
+  void clearTasks();
 
   int getSelectedTask();
 
@@ -27,3 +28,4 @@ class TodoMenu {
   ftxui::Component information_container;
 };
 }  // namespace bTodo::frontend
+
